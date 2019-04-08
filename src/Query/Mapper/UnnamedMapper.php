@@ -18,9 +18,10 @@ class UnnamedMapper extends AbstractMapper implements QueryMapperInterface
      * Binds values to query.
      *
      * @param string $query
-     * @param array  $bindings
+     * @param array $bindings
      *
      * @return string
+     * @throws QueryMapperException
      */
     public function bind(string $query, array $bindings): string
     {
@@ -28,7 +29,7 @@ class UnnamedMapper extends AbstractMapper implements QueryMapperInterface
         $escapedBindings = $this->escapeBindings($bindings);
 
         $query = str_replace('%', '%%', $query);
-        $query = str_replace('?', '%s', $query);
+        $query = str_replace("'?'", '%s', $query);
 
         $query = call_user_func_array('sprintf', array_merge([$query], $escapedBindings));
 
@@ -37,7 +38,7 @@ class UnnamedMapper extends AbstractMapper implements QueryMapperInterface
 
     protected function getBindingPattern(): string
     {
-        return '/\?/';
+        return '/\'\?\'/';
     }
 
     protected function checkBindingsPolicy(array $bindings)
